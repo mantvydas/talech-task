@@ -13,6 +13,8 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
+Route::get('language/{locale}', 'ChangeLocale');
+
 Auth::routes();
 Route::get('/products/trash', 'ProductController@trash')
     ->middleware('auth')
