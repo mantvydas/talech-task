@@ -13,6 +13,31 @@
                 <div class="card-header">{{ __('Edit Product') }}</div>
 
                 <div class="card-body">
+                    @if (session('success'))
+                        <div class="alert alert-success" role="alert">
+                            {{ session('success') }}
+                        </div>
+                    @endif
+
+                    @if ($product->images->count() > 0)
+                        <div class="row justify-content-center" style="margin-bottom: 20px;">
+                            @foreach ($product->images as $image)
+                                <div class="col-lg-3 col-md-4 col-6">
+                                    <div class="d-block mt-2 mb-2 h-100 image-block">
+                                        <img class="img-fluid img-thumbnail" src="{{ asset('storage/images/product_images/'.$image->name) }}" alt="">
+
+                                        <form action="{{ route('products.image.destroy', ['productId' => $product->id, 'imageId' => $image->id]) }}" method="POST">
+                                            @csrf
+                                            @method('DELETE')
+
+                                            <button type="submit" class="btn btn-danger btn-sm delete-image">{{ __('Delete') }}</button>
+                                        </form>
+                                    </div>
+                                </div>
+                            @endforeach
+                        </div>
+                    @endif
+
                     <form method="POST" action="{{ route('products.update', ['product' => $product->id]) }}" enctype="multipart/form-data">
                         @csrf
                         @method('PUT')
@@ -125,19 +150,6 @@
                             </div>
                         </div>
 
-                        @if ($product->images->count() > 0)
-                            <div class="row justify-content-center">
-                                @foreach ($product->images as $image)
-                                    <div class="col-lg-3 col-md-4 col-6">
-                                        <div class="d-block mt-2 mb-2 h-100 image-block">
-                                            <img class="img-fluid img-thumbnail" src="{{ asset('storage/images/product_images/'.$image->name) }}" alt="">
-                                            <button type="submit" class="btn btn-danger btn-sm delete-image">{{ __('Delete') }}</button>
-                                        </div>
-                                    </div>
-                                @endforeach
-                            </div>
-                        @endif
-
                         <div class="user-image mb-3 text-center">
                             <div id="imgPreview"> </div>
                         </div>
@@ -148,7 +160,7 @@
                             <div class="col-md-6">
                                 <div class="custom-file">
                                     <input type="file" name="images[]" class="custom-file-input form-control @error('images.*') is-invalid @enderror" id="images" multiple>
-                                    <label class="images-label" for="images">{{ __('Select files') }}</label>
+                                    <label class="custom-file-label" for="images">{{ __('Select files') }}</label>
 
                                     @error('images.*')
                                     <span class="invalid-feedback" role="alert">

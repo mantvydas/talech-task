@@ -151,4 +151,19 @@ class ProductController extends Controller
         return redirect()->route('products.trash')
             ->with('success', __('Product restored successfully.'));
     }
+
+    /**
+     * Remove product image
+     *
+     * @param int $productId
+     * @param int $imageId
+     * @return \Illuminate\Http\RedirectResponse
+     */
+    public function destroyImage(int $productId, int $imageId)
+    {
+        $this->productService->deleteProductImage($imageId);
+
+        return redirect()->route('products.edit', $productId)
+            ->with('success', __('Image deleted successfully.'));
+    }
 }

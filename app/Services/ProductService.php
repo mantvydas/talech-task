@@ -154,6 +154,19 @@ class ProductService
     }
 
     /**
+     * Delete product image from both server and DB
+     *
+     * @param int $id
+     * @return bool
+     */
+    public function deleteProductImage(int $id): bool
+    {
+        $image = $this->productImageRepository->findById($id);
+        Storage::delete(self::PRODUCT_IMAGES_DIR . '/' . $image->name);
+        return $this->productImageRepository->delete($id);
+    }
+
+    /**
      * Upload product images and return list of images data
      *
      * @param array $images
