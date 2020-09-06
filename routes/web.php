@@ -14,5 +14,11 @@ use Illuminate\Support\Facades\Route;
 */
 
 Auth::routes();
-
-Route::get('/', 'HomeController@index')->middleware('auth');
+Route::get('/products/trash', 'ProductController@trash')
+    ->middleware('auth')
+    ->name('products.trash');
+Route::put('/products/restore/{id}', 'ProductController@restore')
+    ->middleware('auth')
+    ->name('products.restore');
+Route::resource('products', 'ProductController')->middleware('auth');
+Route::get('/', 'ProductController@index')->middleware('auth');

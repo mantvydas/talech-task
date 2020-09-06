@@ -6,3 +6,42 @@
 
 // Bootstrap
 @import '~bootstrap/scss/bootstrap';
+
+.table-vcenter {
+    td,
+    th {
+        vertical-align: middle;
+    }
+}
+
+.delete-image {
+    display: none;
+}
+
+.image-block {
+    &:hover img {
+        opacity: 0.2;
+    }
+
+    &:hover .delete-image {
+        display: block;
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+    }
+}
+
+.products-list {
+    .nav-tabs {
+        border-bottom: 0;
+
+        .nav-item {
+            margin-bottom: 0;
+        }
+
+        .nav-link:hover, .nav-link:focus {
+            border-bottom: 0;
+        }
+    }
+}
