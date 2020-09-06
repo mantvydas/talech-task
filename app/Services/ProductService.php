@@ -13,6 +13,8 @@ use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 
 class ProductService
 {
+    protected const PRODUCT_IMAGES_DIR = 'images/product_images';
+
     /**
      * @var ProductRepository
      */
@@ -146,6 +148,8 @@ class ProductService
      */
     public function permanentlyDeleteProducts(int $olderThan = 7)
     {
+        $oldDeleted = $this->productRepository->getOldDeleted($olderThan);
+        $this->deleteImages($oldDeleted);
         $this->productRepository->forceDelete($olderThan);
     }
 
@@ -159,10 +163,9 @@ class ProductService
     private function uploadImages(array $images, int $productId): array
     {
         $uploadedImages = [];
-        foreach($images as $image)
-        {
+        foreach($images as $image) {
             $name = time() . '_' . $image->getClientOriginalName();
-            Storage::putFileAs('images/product_images', $image, $name);
+            Storage::putFileAs(self::PRODUCT_IMAGES_DIR, $image, $name);
             $uploadedImages[] = [
                 'product_id' => $productId,
                 'name' => $name
@@ -170,6 +173,20 @@ class ProductService
         }
 
         return $uploadedImages;
+    }
+
+    /**
+     * Delete all product images
+     *
+     * @param object $oldDeletedProducts
+     */
+    private function deleteImages(object $oldDeletedProducts)
+    {
+        foreach($oldDeletedProducts as $product) {
+            foreach ($product->images as $image) {
+                Storage::delete(self::PRODUCT_IMAGES_DIR . '/' . $image->name);
+            }
+        }
     }
 
     /**

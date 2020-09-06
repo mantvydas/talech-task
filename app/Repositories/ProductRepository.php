@@ -96,6 +96,25 @@ class ProductRepository
         return $product->restore();
     }
 
+    /**
+     * Get soft deleted products which are older than given days
+     *
+     * @param int $olderThan
+     * @return object
+     */
+    public function getOldDeleted(int $olderThan): object
+    {
+        return Product::onlyTrashed()
+            ->where('deleted_at', '<', Carbon::now()->subDays($olderThan))
+            ->with('images')
+            ->get();
+    }
+
+    /**
+     * Delete soft deleted products which are older than given days
+     *
+     * @param int $olderThan
+     */
     public function forceDelete(int $olderThan)
     {
         Product::onlyTrashed()
