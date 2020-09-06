@@ -95,4 +95,11 @@ class ProductRepository
 
         return $product->restore();
     }
+
+    public function forceDelete(int $olderThan)
+    {
+        Product::onlyTrashed()
+            ->where('deleted_at', '<', Carbon::now()->subDays($olderThan))
+            ->forceDelete();
+    }
 }

@@ -140,6 +140,16 @@ class ProductService
     }
 
     /**
+     * Delete soft deleted products which are older than given days
+     *
+     * @param int $olderThan
+     */
+    public function permanentlyDeleteProducts(int $olderThan = 7)
+    {
+        $this->productRepository->forceDelete($olderThan);
+    }
+
+    /**
      * Upload product images and return list of images data
      *
      * @param array $images
