@@ -64,7 +64,8 @@ class ProductRepository
     {
         if ($includeHistory) {
             $with = ['history' => function ($query) use ($historyMaxDays) {
-                $query->where('created_at', '>=', Carbon::now()->subDays($historyMaxDays));
+                $query->where('created_at', '>=', Carbon::now()->subDays($historyMaxDays))
+                ->orderBy('created_at');
             }];
         }
         $with[] = 'images';
