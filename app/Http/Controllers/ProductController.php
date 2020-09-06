@@ -85,7 +85,10 @@ class ProductController extends Controller
      */
     public function show(int $id)
     {
-        //
+        $colors = Color::getColors();
+        $product = $this->productService->getProductById($id, true);
+
+        return view('products/single_product', compact(['colors', 'product']));
     }
 
     /**

@@ -4,6 +4,7 @@ namespace App\Repositories;
 
 use App\Models\Product;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
+use Illuminate\Support\Carbon;
 
 class ProductRepository
 {
@@ -55,11 +56,20 @@ class ProductRepository
      * Find product by id
      *
      * @param int $id
+     * @param bool $includeHistory
+     * @param int $historyMaxDays
      * @return Product
      */
-    public function findById(int $id): Product
+    public function findById(int $id, bool $includeHistory = false, int $historyMaxDays = 90): Product
     {
-        return Product::with('images')->findOrFail($id);
+        if ($includeHistory) {
+            $with = ['history' => function ($query) use ($historyMaxDays) {
+                $query->where('created_at', '>=', Carbon::now()->subDays($historyMaxDays));
+            }];
+        }
+        $with[] = 'images';
+
+        return Product::with($with)->findOrFail($id);
     }
 
     /**

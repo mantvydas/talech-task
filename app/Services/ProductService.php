@@ -3,12 +3,13 @@
 namespace App\Services;
 
 use App\Models\Product;
+use App\Repositories\ProductHistoryRepository;
 use App\Repositories\ProductImageRepository;
 use App\Repositories\ProductRepository;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\Rule;
-use Illuminate\Pagination\LengthAwarePaginator;
+use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 
 class ProductService
 {
@@ -23,15 +24,23 @@ class ProductService
     protected $productImageRepository;
 
     /**
+     * @var ProductHistoryRepository
+     */
+    protected $productHistoryRepository;
+
+    /**
      * ProductService constructor
      *
      * @param ProductRepository $productRepository
      * @param ProductImageRepository $productImageRepository
+     * @param ProductHistoryRepository $productHistoryRepository
      */
-    public function __construct(ProductRepository $productRepository, ProductImageRepository $productImageRepository)
+    public function __construct(ProductRepository $productRepository, ProductImageRepository $productImageRepository,
+                                ProductHistoryRepository $productHistoryRepository)
     {
         $this->productRepository = $productRepository;
         $this->productImageRepository = $productImageRepository;
+        $this->productHistoryRepository = $productHistoryRepository;
     }
 
     /**
@@ -80,7 +89,13 @@ class ProductService
             'images.*' => 'image|mimes:jpeg,png,jpg,gif,svg|max:8192'
         ])->validate();
 
+        $hasChanges = $this->hasPriceOrQuantityChanged($id, $data);
         $storedProduct = $this->productRepository->save($data, $id);
+
+        if ($hasChanges || !isset($id)) {
+            $data['product_id'] = $storedProduct->id;
+            $this->productHistoryRepository->save($data);
+        }
 
         if (isset($data['files'])) {
             $images = $this->uploadImages($data['files'], $storedProduct->id);
@@ -94,11 +109,12 @@ class ProductService
      * Get product by id
      *
      * @param int $id
+     * @param bool $includeHistory
      * @return Product
      */
-    public function getProductById(int $id): Product
+    public function getProductById(int $id, bool $includeHistory = false): Product
     {
-        return $this->productRepository->findById($id);
+        return $this->productRepository->findById($id, $includeHistory);
     }
 
     /**
@@ -144,5 +160,25 @@ class ProductService
         }
 
         return $uploadedImages;
+    }
+
+    /**
+     * Check for price or quantity changes after update
+     * @param int|null $id
+     * @param array $newValues
+     * @return bool
+     */
+    private function hasPriceOrQuantityChanged(?int $id, array $newValues): bool
+    {
+        if (isset($id)) {
+            $currentProduct = $this->productRepository->findById($id);
+
+            if ($currentProduct->price != $newValues['price'] ||
+                $currentProduct->quantity != $newValues['quantity']) {
+                return true;
+            }
+        }
+
+        return false;
     }
 }
