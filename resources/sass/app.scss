@@ -1,0 +1,101 @@
+// Fonts
+@import url('https://fonts.googleapis.com/css?family=Nunito');
+
+// Variables
+@import 'variables';
+
+// Bootstrap
+@import '~bootstrap/scss/bootstrap';
+
+.table-vcenter {
+    td,
+    th {
+        vertical-align: middle;
+    }
+}
+
+.delete-image {
+    display: none;
+}
+
+.image-block {
+    &:hover img {
+        opacity: 0.2;
+    }
+
+    &:hover .delete-image {
+        display: block;
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+    }
+}
+
+.products-list {
+    .nav-tabs {
+        border-bottom: 0;
+
+        .nav-item {
+            margin-bottom: 0;
+        }
+
+        .nav-link:hover, .nav-link:focus {
+            border-bottom: 0;
+        }
+    }
+}
+
+.btn-secondary {
+    color: #495057;
+    background-color: #fff;
+    border-color: rgba(0,40,100,.12);
+    box-shadow: 0 1px 1px 0 rgba(0,0,0,.05);
+
+    &:hover, &:focus {
+        color: #495057;
+        background-color: #f6f6f6;
+        border-color: rgba(0,20,49,.12);
+    }
+}
+
+.btn-pill {
+    border-radius: 10rem;
+    padding-left: 1.5em;
+    padding-right: 1.5em;
+}
+
+.Tab_header_tabs{
+    margin-bottom: 40px;
+
+    &.tab_pills {
+        padding: 15px 0 20px;
+        border-bottom: 1px solid rgba(0,40,100,.12);
+    }
+}
+
+.product-info {
+    text-align: left;
+    margin-left: 30px;
+
+    @media screen and (max-width: $break-medium) {
+        margin-left: 0;
+    }
+
+    .badge {
+        font-size: 15px;
+        vertical-align: middle;
+    }
+
+    .product-details {
+        background: rgb(249, 249, 249);
+        padding: 15px 15px 0px;
+
+        table tr td {
+            border: 0;
+            padding: 5px 15px;
+            width: 50%;
+            font-weight: 800;
+        }
+    }
+}
